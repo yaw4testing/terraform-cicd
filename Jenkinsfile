@@ -12,7 +12,7 @@ pipeline{
     stages{
         stage('git-checout'){
             steps{
-                sh "checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[]]])"
+                "checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[]]])"
             }
         }
         stage('config-init')
