@@ -1,35 +1,35 @@
-pipeline{
+pipeline {
     agent any
-
     environment{
-        TF_HOME = tool('terraform')
+         TF_HOME = tool('terraform')
         TF_INPUT = "0"
         TF_IN_AUTOMATION = true
         TF_LOG = "WARN"
         AWS_ACCESS_KEY_ID = credentials('aws-access-key')
         AWS_SECRET_KEY_ID = credentials('aws-secret-key')
-     }
-    stages{
-        stage('git-checout'){
-            steps{
-                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[]]])
+    }
+
+    stages {
+        stage('git-checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']],
+                 doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs:  
+                 [[url: 'https://github.com/yaw4testing/terraform-cicd.git']]])
             }
         }
-        stage('config-init')
+        stage('config-init'){
             steps{
-                sh 'terrafrom --version'
-                sh 'terrafrom init'
+                sh 'terraform init'
             }
         }
-        stage('config-validation'){
+        stage('config-validate'){
             steps{
                 sh 'terraform validate'
-
             }
         }
-        stage('config-plan'){
+        stage('confgig-plan'){
             steps{
-                sh 'terraform plan -out=DevopsPlan'
+                sh 'terraform plan -out="DevOpsPlan"'
             }
         }
         stage('config-apply'){
@@ -37,8 +37,9 @@ pipeline{
                 script{
                     def apply = false
                     try{
-                        input message: 'confirm apply', ok: 'Apply config'
-                        apply = true
+                        sh 'terraform apply "DevOpsPlan"'
+                        input message: 'confirm apply', ok: 'apply config'
+                        apply = true 
                     }catch(err){
                         apply = false
                         sh 'terraform destroy -auto-approve'
@@ -47,5 +48,4 @@ pipeline{
             }
         }
     }
-    
 }
