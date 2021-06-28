@@ -1,6 +1,7 @@
+/* groovylint-disable NestedBlockDepth, VariableTypeRequired */
 pipeline {
     agent any
-    environment{
+    environment {
          TF_HOME = tool('terraform')
         TF_INPUT = "0"
         TF_IN_AUTOMATION = true
@@ -17,30 +18,32 @@ pipeline {
                  [[url: 'https://github.com/yaw4testing/terraform-cicd.git']]])
             }
         }
-        stage('config-init'){
-            steps{
+        stage('config-init') {
+            steps {
                 sh 'terraform init'
             }
         }
-        stage('config-validate'){
-            steps{
+        stage('config-validate') {
+            steps {
                 sh 'terraform validate'
             }
         }
-        stage('confgig-plan'){
-            steps{
+        stage('confgig-plan') {
+            steps {
                 sh 'terraform plan -out="DevOpsPlan"'
             }
         }
-        stage('config-apply'){
-            steps{
-                script{
+        stage('config-apply') {
+            steps {
+                script {
+                    /* groovylint-disable-next-line NoDef */
                     def apply = false
-                    try{
+                    /* groovylint-disable-next-line SpaceAfterClosingBrace */
+                    try {
                         sh 'terraform apply "DevOpsPlan"'
                         input message: 'confirm apply', ok: 'apply config'
                         apply = true 
-                    }catch(err){
+                    }catch (err) {
                         apply = false
                         sh 'terraform destroy -auto-approve'
                     }
